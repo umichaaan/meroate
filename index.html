@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>めっちゃかっこいいめろぱかの曲を当てる</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ===== 色の設定(ここを変えると、全体の色が変わります) ===== */
+  :root {
+    --bg: #DDF6E4; --card: #ffffff; --ink: #17382A; --sub: #4F7261;
+    --accent: #3DDC97;        /* メインの色(メインのボタン) */
+    --accent-text: #087F55;   /* 白い背景の上に出す、緑の文字 */
+    --line: #BFE3CC;
+    --sh-title: #4F3FD1;      /* タイトルの四角の影(紫寄りの濃い青) */
+    --sh-text: #FF6B6B;       /* 質問や指示が出る四角の影(赤) */
+    --sh-btn: #FFD43B;        /* ボタンがある四角の影(黄色) */
+    --btn-shadow: #58635D;    /* ボタンの影(グレー) */
+    --pop: #FFE066;           /* 「はい」のマーカー(黄色) */
+    --pop2: #FFB8CF;          /* 「いいえ」のマーカー(ピンク) */
+    --no: #C72F57;            /* 「いいえ」の文字の色 */
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { height: 100%; }
+  body {
+    margin: 0; min-height: 100%; display: flex; flex-direction: column;
+    background-color: var(--bg);
+    /* 星の模様(間隔を広げています。96px ごとに、星が2つ) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cpolygon points='24.0,14.0 26.5,20.6 33.5,20.9 28.0,25.3 29.9,32.1 24.0,28.2 18.1,32.1 20.0,25.3 14.5,20.9 21.5,20.6' fill='white' fill-opacity='.95'/%3E%3Cpolygon points='72.0,62.0 74.5,68.6 81.5,68.9 76.0,73.3 77.9,80.1 72.0,76.2 66.1,80.1 68.0,73.3 62.5,68.9 69.5,68.6' fill='white' fill-opacity='.95'/%3E%3C/svg%3E");
+    background-size: 96px 96px;
+    color: var(--ink); line-height: 1.6;
+    font-family: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  }
+  /* 隠し要素: スイカの皮をイメージした、なめらかな波状の縦縞 */
+  body.watermelon-mode {
+    background-color: #176b35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='120' viewBox='0 0 100 120'%3E%3Crect width='100' height='120' fill='%23176b35'/%3E%3Cpath d='M35 0 C15 20 15 40 35 60 C55 80 55 100 35 120 L65 120 C85 100 85 80 65 60 C45 40 45 20 65 0 Z' fill='%2309140d'/%3E%3C/svg%3E");
+    background-size: 100px 120px;
+    color: #102417;
+  }
+  body.watermelon-mode #titlebox {
+    /* サイズ・余白・枠線は通常時のまま。背景色と星の色だけ変更 */
+    background-color: #e52e3f;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpolygon points='14.0,8.0 15.5,12.0 19.7,12.1 16.4,14.8 17.5,18.9 14.0,16.5 10.5,18.9 11.6,14.8 8.3,12.1 12.5,12.0' fill='%230b0b0b'/%3E%3Cpolygon points='42.0,36.0 43.5,40.0 47.7,40.1 44.4,42.8 45.5,46.9 42.0,44.5 38.5,46.9 39.6,42.8 36.3,40.1 40.5,40.0' fill='%230b0b0b'/%3E%3C/svg%3E");
+    background-size: 56px 56px;
+    color: #090909;
+    box-shadow: 6px 6px 0 #111 !important;
+  }
+  body.watermelon-mode #titlebox h1 { color: #090909; }
+
+  main { flex: 1; width: 100%; max-width: 520px; margin: 0 auto;
+    padding: calc(28px + env(safe-area-inset-top, 0px)) 16px 48px; }
+  /* 短い画面は、画面の真ん中に置く */
+  main.center { display: flex; flex-direction: column; justify-content: center; }
+
+  /* 四角(タイトル / 文字 / ボタンの3種類) */
+  .card { background: var(--card); border: 3px solid var(--ink); border-radius: 0;
+    box-shadow: 6px 6px 0 var(--sh-text); padding: 24px 20px; text-align: center; }
+  .card + .card { margin-top: 20px; }     /* 四角と四角の間のすき間 */
+  #titlebox { box-shadow: 6px 6px 0 var(--sh-title); padding: 10px 16px; text-align: center;
+    background-color: var(--accent); color: var(--ink);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpolygon points='14.0,8.0 15.5,12.0 19.7,12.1 16.4,14.8 17.5,18.9 14.0,16.5 10.5,18.9 11.6,14.8 8.3,12.1 12.5,12.0' fill='white' fill-opacity='.6'/%3E%3Cpolygon points='42.0,36.0 43.5,40.0 47.7,40.1 44.4,42.8 45.5,46.9 42.0,44.5 38.5,46.9 39.6,42.8 36.3,40.1 40.5,40.0' fill='white' fill-opacity='.6'/%3E%3C/svg%3E");   /* 小さめの星を、細かい間隔で */
+    background-size: 56px 56px; }
+  #titlebox.big { padding: 34px 22px; text-align: left; }   /* 最初の画面だけ、大きく・左寄せ */
+  #actions { box-shadow: 6px 6px 0 var(--sh-btn); }
+  #screen:empty, #actions:empty { display: none; }   /* 中身がないときは出さない */
+  #screen.sticky { position: sticky; top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 5; }
+
+  h1 { font-size: .95rem; font-weight: 700; margin: 0; line-height: 1.4; text-wrap: balance; }   /* プレイ中は、細い四角に小さめの文字 */
+  #titlebox.big h1 { font-size: clamp(1.7rem, 8.5vw, 2.6rem); font-weight: 900; line-height: 1.35; }
+  .lead { line-height: 1.5; margin: 12px 0 28px; }
+  .small { color: var(--sub); font-size: .85rem; }
+  .q { font-size: 1.3rem; font-weight: bold; margin: 12px 0 20px; }
+  /* 「当ててもらう」の質問: 2行分の高さをいつも確保して、ボタンの位置がずれないようにする */
+  .q.two { font-size: 1.1rem; min-height: 3.6rem; display: flex; align-items: center; justify-content: center; }
+  .big { font-size: 1.6rem; font-weight: bold; color: var(--accent-text); margin: 12px 0; word-break: break-all; }
+  .btns { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ボタン(影はグレー。押すと、ぽこっとへこみます) */
+  button { font-family: inherit; font-size: 1.05rem; font-weight: 500; padding: 14px 26px; border-radius: 999px;
+    border: 2.5px solid var(--ink); background: #fff; color: var(--ink); cursor: pointer;
+    box-shadow: 0 4px 0 var(--btn-shadow); transition: transform .08s, box-shadow .08s; }
+  button.main { background: var(--accent); font-weight: bold; }
+  .credit-line { margin: 5px 0; }
+  /* MVリンクは補助的な操作。メインの「もう一度あそぶ」より目立たせない */
+  .mv-link { display: block; width: fit-content; max-width: 100%; margin: 12px auto 0; padding: 8px 14px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: #fff; color: var(--sub); font-size: .9rem; font-weight: 500;
+    text-decoration: underline; text-underline-offset: 3px; box-shadow: none; }
+  .mv-link:active { transform: none; box-shadow: none; }
+  .mv-link:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
+  button.link { border: 0; background: transparent; box-shadow: none; color: var(--sub); font-size: .9rem; padding: 8px; }
+  button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--btn-shadow); }
+  button.link:active { transform: none; box-shadow: none; }
+  button:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
+  button:disabled { color: var(--ink); cursor: default; box-shadow: none; }
+  .ghost { visibility: hidden; }          /* 見えないけれど、場所は取っておく */
+
+  ul { list-style: none; padding: 0; margin: 12px 0; }
+  li { padding: 6px 0; border-bottom: 1px solid var(--line); text-align: left; font-size: .95rem; }
+  .sec { margin-top: 22px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+  .chip { padding: 8px 16px; font-size: .95rem; border-radius: 999px; }
+  .backrow { text-align: left; }
+
+  /* 自分で当てるモード: 大きな答えの表示と、質問ボタン */
+  .answer-big { display: inline-block; padding: 0 14px; font-size: 2.8rem; font-weight: bold; margin: 0; line-height: 1.3;
+    background: linear-gradient(transparent 62%, var(--pop) 62%); }
+  .answer-big.yes { color: var(--accent-text); }
+  .answer-big.no { color: var(--no); background: linear-gradient(transparent 62%, var(--pop2) 62%); }
+  .answer-big.maybe { color: var(--sub); font-size: 1.6rem; background: none; }
+  .qbtn { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; }
+  .qbtn.done { opacity: .7; background: var(--bg); }
+  .badge { flex: none; padding: 2px 12px; border-radius: 999px; font-size: .9rem; font-weight: bold;
+    border: 2px solid currentColor; background: #fff; }
+  .badge.yes { color: var(--accent-text); }
+  .badge.no { color: var(--no); }
+  .badge.maybe { color: var(--sub); }
+
+  /* サイト本体の枠の外に表示するクレジット */
+  #site-credit { width: 100%; max-width: 520px; margin: 28px auto 0; padding: 0 16px 28px;
+    color: var(--sub); font-size: .82rem; line-height: 1.7; }
+  #site-credit h2 { margin: 18px 0 6px; color: var(--ink); font-size: .90rem; }
+  #site-credit p { margin: 4px 0; }
+  #site-credit a { color: inherit; text-underline-offset: 2px; }
+  #site-credit .site-credit-note { margin-top: 8px; }
+
+  /* スイカモードでは、外側のクレジットを明るい色にする */
+body.watermelon-mode #site-credit {
+  color: #ffffff;
+}
+
+body.watermelon-mode #site-credit h2 {
+  color: #ffffff;
+}
+
+body.watermelon-mode #site-credit a {
+  color: #ffffff;
+}
+  
+</style>
+</head>
+<body>
+<main id="page">
+  <div class="card" id="titlebox"><h1 id="title"></h1></div>
+  <div class="card" id="screen"></div>
+  <div class="card" id="actions"></div>
+</main>
+<footer id="site-credit">
+  <h2>〇めろんぱーかー公式</h2>
+  <p><a href="https://www.youtube.com/@meropaka" target="_blank" rel="noopener noreferrer">YouTube</a></p>
+  <p><a href="https://x.com/meropaka_info" target="_blank" rel="noopener noreferrer">X(旧Twitter)</a></p>
+  <p><a href="https://meropaka.com/" target="_blank" rel="noopener noreferrer">公式サイト</a></p>
+
+  <h2>〇このサイトについて</h2>
+  <p>このサイトはファンが非公式に制作したものです。</p>
+  <p>曲名などの権利はそれぞれの権利者に帰属します。</p>
+  <p class="site-credit-note">問い合わせ、削除依頼は<a href="https://x.com/4Ux_xMi" target="_blank" rel="noopener noreferrer">製作者のX(@4Ux_xMi)</a>までお願いいたします。</p>
+</footer>
+
+<script>
+  // ==========================================================
+  // ★ ここだけ書き換えれば、自分のゲームになります ★
+  // ==========================================================
+
+  // 1. アーティスト名
+  const ARTIST = "めろんぱーかー";
+
+  // サイトの名前(いちばん上の四角に出る名前と、ブラウザのタブに出る名前)
+  // | の所で改行します。最初の画面だけ3行に分けて出し、ほかの画面では | は無視されます
+  const TITLE = "めっちゃかっこいい|めろぱかの|曲を当てる";
+  const SITE_URL = "ここに公開したサイトのURL";
+
+  // 2. 質問のリスト(上から順に 1番目、2番目…と数えます)
+  const QUESTIONS = [
+    "アルバム「めろんめろでぃー♪」に収録されていますか?",
+    "アルバム「めろんりゆにおん♪」に収録されていますか?",
+    "アルバム「めろんせれぶれーしょん♪」に収録されていますか?",
+    "ミニアルバム「めろんせれくしょん」に収録されていますか?",
+    "2023年より前にMVが投稿されましたか?",
+    "2024年より前にMVが投稿されましたか?",
+    "2025年より前にMVが投稿されましたか?",
+    "2026年より前にMVが投稿されましたか?",
+    "作詞になろ屋さんが関わっていますか?",
+    "作詞にたるまるさんが関わっていますか?",
+    "そらねこさんが制作した曲ですか?",
+    "曲名の読みは「め」から始まりますか?",
+    "曲名は「めろん」から始まりますか?",
+    "曲名は「Me 論破 Rap」から始まりますか?",
+    "曲名がカタカナのみですか?",
+    "曲名が漢字のみですか?",
+    "曲名にアルファベットが含まれますか?",
+    "めろんぱーかーのメンバー以外が歌唱しますか?",
+    "MVにしろこさんのイラストが採用されていますか?",
+    "MVにしちさんのイラストが採用されていますか?",
+    "MVにりんくさんのイラストが採用されていますか?",
+    "インスト曲ですか?",
+    "夏の曲ですか?",
+    "ライブで初披露されましたか?",
+    "開催されたライブまたはアルバムのタイトルですか?",
+    "MVにパーカーが登場しますか?"
+  ];
+
+  // 3. 曲のリスト
+  //   ["曲名", 質問1の答え, 質問2の答え, ...] の形で書きます
+  //   答えは  1 = はい / 0 = いいえ / null = わからない・どちらでもない
+  //   ※ 質問の数と、答えの数をそろえてください
+    // 3. 曲のリスト
+  // 曲を追加するときは、下の曲と同じ形の { ... } を1つコピーして、最後に追加します。
+  // name = 曲名 / reading = 読み方 / url = MVのURL / mvDate = MV投稿日(YYYY-MM-DD)
+  // album = 収録アルバム / lyrics = 作詞者(複数可) / composer = 作曲者
+  // answers = 質問への回答。QUESTIONS の上から順に 26個を並べます。
+  // 回答は 1 = はい / 0 = いいえ / null = わからない・どちらでもない
+  const SONGS = [
+    {
+      name: "めろんぱーてぃー",
+      reading: "めろんぱーてぃー",
+      url: "https://www.youtube.com/watch?v=j4ZnTXBzhX0",
+      mvDate: "2022-09-09",
+      album: "めろんめろでぃー",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,0,0,0,1,1],
+    },
+    {
+      name: "Me 論破 Rap Destruction",
+      reading: "めろんぱらっぷでぃすとらくしょん",
+      url: "https://www.youtube.com/watch?v=vfWItQyWP8I",
+      mvDate: "2022-11-04",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,1,1,1,1,1,0,0,1,0,1,0,0,1,0,0,0,1,0,0,0,0,1],
+    },
+    {
+      name: "愛さKnightアンサンブル",
+      reading: "あいさないとあんさんぶる",
+      url: "https://www.youtube.com/watch?v=rqUbGE0cpzI",
+      mvDate: "2023-01-28",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "星屑モノローグ",
+      reading: "ほしくずものろーぐ",
+      url: "https://www.youtube.com/watch?v=oePe0DI71hs",
+      mvDate: "2023-03-05",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "セツナリウム",
+      reading: "せつなりうむ",
+      url: "https://www.youtube.com/watch?v=2iJroJNReSM",
+      mvDate: "2023-04-02",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "Me 論破 Rap Carnivalizm",
+      reading: "めろんぱらっぷかーにばりずむ",
+      url: "https://www.youtube.com/watch?v=IWygUCHu3cc",
+      mvDate: "2023-04-23",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,0,1],
+    },
+    {
+      name: "めろんぱんちらいん!!!!!!!",
+      reading: "めろんぱんちらいん",
+      url: "https://www.youtube.com/watch?v=bZfbcoWuqPo",
+      mvDate: "2023-07-15",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,1],
+    },
+    {
+      name: "ラブハライブ",
+      reading: "らぶはらいぶ",
+      url: "https://www.youtube.com/watch?v=RWkOjBX7iG8",
+      mvDate: "2023-07-26",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めろんサマーフェスティバル",
+      reading: "めろんさまーふぇすてぃばる",
+      url: "https://www.youtube.com/watch?v=1CiiPZwd0fo",
+      mvDate: "2023-08-10",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,0,0,0,1,0,1,1],
+    },
+    {
+      name: "クラウン",
+      reading: "くらうん",
+      url: "https://www.youtube.com/watch?v=bgObieentzo",
+      mvDate: "2023-09-23",
+      album: "めろんめろでぃー♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [1,0,0,1,0,1,1,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1],
+    },
+    {
+      name: "キミイロ",
+      reading: "きみいろ",
+      url: "https://www.youtube.com/watch?v=pIwWNA72So4",
+      mvDate: "2023-11-04",
+      album: "めろんめろでぃー♪",
+      lyrics: ["そらねこ"],
+      composer: "そらねこ",
+      answers: [1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めろんめろでぃー",
+      reading: "めろんめろでぃー",
+      url: "https://www.youtube.com/watch?v=4OljA9MalxM",
+      mvDate: "2023-12-25",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,0,0,0,0,0,1,1],
+    },
+    {
+      name: "アンサーソング",
+      reading: "あんさーそんぐ",
+      url: "https://www.youtube.com/watch?v=xWK48ymTu34",
+      mvDate: "2024-02-12",
+      album: "めろんめろでぃー♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [1,0,0,1,0,0,1,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めっちゃかっこいいアルバムの始まり方",
+      reading: "めっちゃかっこいいあるばむのはじまりかた",
+      url: "",
+      mvDate: "",
+      album: "めろんめろでぃー♪",
+      lyrics: [],
+      composer: "長月もしも",
+      answers: [1,0,0,0,null,null,null,null,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,null],
+    },
+    {
+      name: "心の在処",
+      reading: "こころのありか",
+      url: "https://www.youtube.com/watch?v=duSVpvtHNa4",
+      mvDate: "2024-03-19",
+      album: "めろんりゆにおん♪",
+      lyrics: ["サムライ翔"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "すいかぱらっぱーあっぱらぱー",
+      reading: "すいかぱらっぱーあっぱらぱー",
+      url: "https://www.youtube.com/watch?v=X-oQNchvis0",
+      mvDate: "2024-04-01",
+      album: "",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1],
+    },
+    {
+      name: "Me 論破 Rap Ressurection",
+      reading: "めろんぱらっぷりざれくしょん",
+      url: "https://www.youtube.com/watch?v=L-hE4nhhj24",
+      mvDate: "2024-06-23",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,1,0,1,0,0,1,0,0,0,0,0,0,1,0,1],
+    },
+    {
+      name: "そして、あの夏のユーフォリア",
+      reading: "そして、あのなつのゆーふぉりあ",
+      url: "https://www.youtube.com/watch?v=3N51BEfMl8Y",
+      mvDate: "2024-08-19",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+    },
+    {
+      name: "茜光花火",
+      reading: "せんこうはなび",
+      url: "https://www.youtube.com/watch?v=Nt2or7Oi2Vk",
+      mvDate: "2024-08-29",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,1,0,1,0,0,1,1,1,1,0,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1],
+    },
+    {
+      name: "勧善懲悪アンチテーゼ",
+      reading: "かんぜんちょうあくあんちてーぜ",
+      url: "https://www.youtube.com/watch?v=2Og-BP9GuQk",
+      mvDate: "2024-10-05",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めろぱかサーカス",
+      reading: "めろぱかさーかす",
+      url: "https://www.youtube.com/watch?v=959jIlg2aHE",
+      mvDate: "2024-11-04",
+      album: "めろんりゆにおん♪",
+      lyrics: ["そらねこ"],
+      composer: "そらねこ",
+      answers: [0,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+    },
+    {
+      name: "歌い手失格",
+      reading: "うたいてしっかく",
+      url: "https://www.youtube.com/watch?v=04ziU3KinPI",
+      mvDate: "2024-11-23",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+    },
+    {
+      name: "スノウバード",
+      reading: "すのうばーど",
+      url: "https://www.youtube.com/watch?v=5UFSm9CGoWA",
+      mvDate: "2024-12-06",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],
+    },
+    {
+      name: "シリウスB",
+      reading: "しりうすびー",
+      url: "https://www.youtube.com/watch?v=Eqt9O4Bgu7U",
+      mvDate: "2024-12-22",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めろんりゆにおん",
+      reading: "めろんりゆにおん♪",
+      url: "https://www.youtube.com/watch?v=Wrje3wGhFpQ",
+      mvDate: "2025-02-01",
+      album: "めろんりゆにおん",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,1,0],
+    },
+    {
+      name: "チョコレート革命",
+      reading: "ちょこれーとかくめい",
+      url: "https://www.youtube.com/watch?v=xgRKumNSULU&list=PLAqQme6JHWopHN9yL4fSZoJcIaZJ5OC_7",
+      mvDate: "2025-02-13",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
+    },
+    {
+      name: "スターライト",
+      reading: "すたーらいと",
+      url: "https://www.youtube.com/watch?v=fYgtnF-oe1U",
+      mvDate: "2025-03-20",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,0,1,1,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],
+    },
+    {
+      name: "強く咲く",
+      reading: "つよくさく",
+      url: "https://www.youtube.com/watch?v=yzoqClsSKsU",
+      mvDate: "2025-08-15",
+      album: "めろんりゆにおん♪",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+    },
+    {
+      name: "めっちゃ盛り上がるアルバムの始まり方",
+      reading: "めっちゃもりあがるあるばむのはじまりかた",
+      url: "",
+      mvDate: "",
+      album: "めろんりゆにおん♪",
+      lyrics: [],
+      composer: "長月もしも",
+      answers: [0,1,0,0,null,null,null,null,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,null],
+    },
+    {
+      name: "禁断の果実",
+      reading: "きんだんのかじつ",
+      url: "https://www.youtube.com/watch?v=Dc1u7TUhL6U",
+      mvDate: "2025-04-01",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "SUPER ULTRA LOVE SONG",
+      reading: "すーぱーうるとららぶそんぐ",
+      url: "https://www.youtube.com/watch?v=DT5RzQjOQOw",
+      mvDate: "2025-05-31",
+      album: "めろんりゆにおん♪",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,1],
+    },
+    {
+      name: "めろめろ大作戦",
+      reading: "めろめろだいさくせん",
+      url: "https://www.youtube.com/watch?v=Ga3Q8ud3JZU",
+      mvDate: "2025-07-12",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+    },
+    {
+      name: "魑魅魑魅魍魎魑魅魍魎",
+      reading: "ちみちみもうりょうちみもうりょう",
+      url: "https://www.youtube.com/watch?v=esaiVKPV38Y",
+      mvDate: "2025-08-09",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0],
+    },
+    {
+      name: "ファンサマ",
+      reading: "ふぁんさま",
+      url: "https://www.youtube.com/watch?v=F0bxm-tyBzE",
+      mvDate: "2025-08-21",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["なろ屋","たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    },
+    {
+      name: "Killing Joke",
+      reading: "きりんぐじょーく",
+      url: "https://www.youtube.com/watch?v=rZlwjANmXq0",
+      mvDate: "2025-09-14",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+    },
+    {
+      name: "イカロスの翼",
+      reading: "いかろすのつばさ",
+      url: "https://www.youtube.com/watch?v=25REKBIWgUU",
+      mvDate: "2025-10-11",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "めろぱかミュージカル",
+      reading: "めろぱかみゅーじかる",
+      url: "https://www.youtube.com/watch?v=BsCAVlIXHrc",
+      mvDate: "2025-11-04",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["そらねこ"],
+      composer: "そらねこ",
+      answers: [0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "デウス・エクス・マキナ",
+      reading: "でうす・えくす・まきな",
+      url: "https://www.youtube.com/watch?v=x35KdSTeK3A",
+      mvDate: "2025-11-25",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0],
+    },
+    {
+      name: "永遠の日差しの頂",
+      reading: "えいえんのひざしのいただき",
+      url: "https://www.youtube.com/watch?v=iBv1xTmfuZY",
+      mvDate: "2025-11-29",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "フレンズ",
+      reading: "ふれんず",
+      url: "https://www.youtube.com/watch?v=WzIS7y8sFo0",
+      mvDate: "2025-12-13",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "めろんせれぶれーしょん",
+      reading: "めろんせれぶれーしょん",
+      url: "https://www.youtube.com/watch?v=5Vaqr6xAF-4",
+      mvDate: "2025-12-25",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる","なろ屋"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,1,1,1,0,1,1,0,0,0,0,0,0,1,0,0,0,0,1,1],
+    },
+    {
+      name: "遊藍飛行",
+      reading: "ゆうらんひこう",
+      url: "https://www.youtube.com/watch?v=1ckrDyjE3DM",
+      mvDate: "2026-01-24",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "春恋チョコレート",
+      reading: "はるこいちょこれーと",
+      url: "https://www.youtube.com/watch?v=qlFUbsNYxfU",
+      mvDate: "2026-03-14",
+      album: "めろんせれぶれーしょん",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "めっちゃおしゃれなアルバムの始まり方",
+      reading: "めっちゃおしゃれなあるばむのはじまりかた",
+      url: "",
+      mvDate: "",
+      album: "めろんせれぶれーしょん",
+      lyrics: [],
+      composer: "長月もしも",
+      answers: [0,0,1,0,null,null,null,null,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,null],
+    },
+    {
+      name: "Me 論破 Rap Requiem",
+      reading: "めろんぱらっぷれくいえむ",
+      url: "https://www.youtube.com/watch?v=bZN5EvFVad0",
+      mvDate: "2026-04-29",
+      album: "",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,0,0,0,1],
+    },
+    {
+      name: "シンガーズライ、ライターズシン",
+      reading: "しんがーずらい、らいたーずしん",
+      url: "https://www.youtube.com/watch?v=jeTdqXd4b4w",
+      mvDate: "2026-06-19",
+      album: "",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "革命歌唱女",
+      reading: "かくめいかしょうじょ",
+      url: "https://www.youtube.com/watch?v=0oCktsfE28M",
+      mvDate: "2026-07-03",
+      album: "",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    },
+    {
+      name: "IIII",
+      reading: "ふぉー",
+      url: "https://www.youtube.com/watch?v=DGOD9_R-fAo",
+      mvDate: "2026-08-19",
+      album: "",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],
+    },
+    {
+      name: "ラブリー♡フレネミー",
+      reading: "らぶりーふれねみー",
+      url: "https://www.youtube.com/watch?v=86daM2m9fJA",
+      mvDate: "2026-09-04",
+      album: "",
+      lyrics: ["たるまる"],
+      composer: "長月もしも",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1],
+    },
+    // 新曲を追加するためのひな形(コピーして、上の曲一覧の中に追加してください)
+    // {
+    //   name: "新曲の名前",
+    //   reading: "しんきょくのなまえ",
+    //   url: "https://www.youtube.com/watch?v=...",
+    //   mvDate: "2026-10-24",
+    //   album: "収録アルバム名",
+    //   lyrics: ["作詞者1", "作詞者2"],
+    //   composer: "作曲者",
+    //   answers: [1, 0, 0, 1, /* ここに残りの回答を入れて、合計26個にする */]
+    // },
+  ];
+
+  // ==========================================================
+  // ここから下は、ゲームを動かす部分です(最初は触らなくてOK)
+  // ==========================================================
+
+  const actionsEl = document.getElementById("actions");   // 下の枠(ボタンを入れる)
+
+  let mode = null;       // どちらであそぶか: null(未選択) / "ai"(AIが当てる) / "player"(自分が当てる)
+  let target = null;     // 自分が当てるモードの「正解の曲」
+  let asked = [];        // 自分が当てるモードで、した質問と答え
+  let wrong = [];        // 自分が当てるモードで、はずした曲名
+  let finished = null;   // 自分が当てるモードの結果: null / "win" / "giveup"
+  let panel = null;      // 自分が当てるモードの画面: null(3つのボタン) / "questions" / "answer" / "giveup"
+  let started = false;   // スタートボタンを押したか
+  let answers = [];      // これまでの答え: { q: 質問の番号, a: 1(はい) / 0.5(たぶんそう) / 0(わからない) / -0.5(たぶん違う) / -1(いいえ) }
+  let rejected = [];     // 「ちがう」と言われた曲(もう候補に出さない)
+  let found = null;      // 当たった曲名
+  let shown = null;      // いま画面に出している質問: { key: ..., q: 質問の番号 }
+  const MARGIN = 0.5;    // 質問をランダムにする幅(大きいほど、質問がばらける。小さいほど、少ない質問数で当てる)
+  const WATERMELON_SONGS = new Set(["すいかぱらっぱーあっぱらぱー", "禁断の果実"]);
+
+  // 答えと曲の「食い違い度」(ペナルティ)を数える
+  //   はい/いいえ の食い違い → 2点、たぶん〜 の食い違い → 1点、わからない → 0点
+  function penalty(song) {
+    let p = 0;
+    answers.forEach(ans => {
+      const v = song.answers[ans.q];                // 曲の答え: 1 / 0 / null(+1 は曲名の分)
+      if (ans.a === 0 || v === null) return;    // 「わからない」や、曲のデータが null なら数えない
+      const s = v === 1 ? 1 : -1;               // 曲の答えを +1 / -1 にそろえる
+      if (ans.a * s < 0) p += Math.abs(ans.a) * 2;   // 向きが逆なら食い違い
+    });
+    return p;
+  }
+
+  // 候補に残っている曲を、食い違いが少ない順に返す
+  // いちばん近い曲より「1点まで」多い曲は、まだ残す(「たぶん」の答えの余裕)
+  function candidates() {
+    const list = SONGS
+      .filter(s => !rejected.includes(s.name))
+      .map(s => ({ song: s, p: penalty(s) }));
+    if (list.length === 0) return [];
+    const min = Math.min(...list.map(x => x.p));
+    return list
+      .filter(x => x.p <= min + 1)
+      .sort((a, b) => a.p - b.p)
+      .map(x => x.song);
+  }
+
+  // 残りの曲を「はい」「いいえ」に半分くらいに分けられる質問を、いくつか選び、その中からランダムに1つ出す
+  // (いつも一番いい質問だけを出すと、「はい」を押し続けたとき、毎回同じ曲になってしまうため)
+  function nextQuestion(cands) {
+    const asked = answers.map(x => x.q);
+    const options = [];   // 使える質問と、その点数
+    for (let q = 0; q < QUESTIONS.length; q++) {
+      if (asked.includes(q)) continue;
+      let yes = 0, no = 0, unknown = 0;
+      cands.forEach(s => {
+        if (s.answers[q] === 1) yes++;
+        else if (s.answers[q] === 0) no++;
+        else unknown++;
+      });
+      if (yes === 0 || no === 0) continue;       // 絞り込めない質問は使わない
+      options.push({ q: q, score: Math.abs(yes - no) + unknown });   // 点数は小さいほど、いい質問
+    }
+    if (options.length === 0) return -1;         // 使える質問がなければ -1
+    const best = Math.min(...options.map(o => o.score));
+    // いちばんいい質問との差が、MARGIN の範囲に入る質問から、ランダムに選ぶ
+    const margin = Math.max(2, Math.round(cands.length * MARGIN));
+    const pool = options.filter(o => o.score <= best + margin);
+    return pool[Math.floor(Math.random() * pool.length)].q;
+  }
+
+  // いま画面に出している質問を覚えておく
+  // (ランダムに選ぶので、画面に出した質問と、答えとして記録する質問がずれないようにするため)
+  function currentKey() { return answers.length + ":" + rejected.length; }
+  function pickQuestion(cands) {
+    const key = currentKey();
+    if (!shown || shown.key !== key) shown = { key: key, q: nextQuestion(cands) };
+    return shown.q;
+  }
+
+  // 画面に部品を作る小さな道具
+  function el(tag, className, text) {
+    const e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function button(label, className, onClick) {
+    const b = el("button", className, label);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  function answer(a) {
+    const cands = candidates();
+    answers.push({ q: pickQuestion(cands), a: a });
+    render();
+  }
+  function restart() {
+    answers = []; started = false;
+    mode = null; target = null; asked = []; wrong = []; finished = null;
+    rejected = []; found = null; shown = null;
+    panel = null;
+    render();
+  }
+
+  // ===== 「これですか?」と聞く画面 =====
+  function guessScreen(screen, song) {
+    screen.append(
+      el("p", "small", "思い浮かべているのは"),
+      el("p", "big", "「" + song.name + "」"),
+      el("p", "q", "ですか?")
+    );
+    const box = el("div", "btns");
+    box.append(
+      button("はい", "main", () => { found = song.name; render(); }),
+      button("いいえ", "", () => { rejected.push(song.name); render(); })   // 外れた曲は、もう出さない
+    );
+    actionsEl.append(box);
+  }
+
+  // ===== データ診断: 全曲を区別できる質問になっているか調べる =====
+  function renderCheck(screen) {
+    screen.append(el("p", "q", "データ診断"));
+
+    // 1. 答えの並びがまったく同じ曲を探す(どんな質問でも区別できない曲)
+    const groups = {};
+    SONGS.forEach(s => {
+      const key = s.answers.join(",");    // 答えの並びを、1つの文字にする
+      (groups[key] = groups[key] || []).push(s.name);
+    });
+    const same = Object.values(groups).filter(g => g.length > 1);
+
+    if (same.length === 0) {
+      screen.append(el("p", "small", "✓ 答えの並びが同じ曲はありません"));
+    } else {
+      screen.append(el("p", "small", "区別できない曲があります。質問を足すか、答えを見直してください"));
+      const ul = el("ul");
+      same.forEach(g => ul.appendChild(el("li", "", g.join(" / "))));
+      screen.append(ul);
+    }
+
+    // 2. 質問ごとの はい / いいえ / null の数
+    screen.append(el("p", "small sec", "質問ごとの はい / いいえ / null の数(どちらかに偏った質問は、あまり役に立ちません)"));
+    const ul2 = el("ul");
+    QUESTIONS.forEach((text, q) => {
+      let yes = 0, no = 0, nul = 0;
+      SONGS.forEach(s => {
+        if (s.answers[q] === 1) yes++;
+        else if (s.answers[q] === 0) no++;
+        else nul++;
+      });
+      ul2.appendChild(el("li", "", text + " → " + yes + " / " + no + " / " + nul));
+    });
+    screen.append(ul2, button("もどる", "main", restart));
+  }
+
+  // 答え(1 / 0 / null)を、表示する文字と色の名前にする
+  function ansLabel(a) { return a === 1 ? "はい" : a === 0 ? "いいえ" : "どちらとも言えない"; }
+  function ansClass(a) { return a === 1 ? "yes" : a === 0 ? "no" : "maybe"; }
+
+  // 結果画面に、質問回数と曲のクレジットを表示する
+  function addCredits(screen, song, questionCount, wrongCount = null) {
+    screen.append(el("p", "small credit-line", "質問回数　" + questionCount + "回"));
+    if (wrongCount !== null) {
+      screen.append(el("p", "small credit-line", "ハズレ　" + wrongCount + "回"));
+    }
+    if (song.lyrics && song.lyrics.length) {
+      screen.append(el("p", "small credit-line", "作詞　" + song.lyrics.join("・")));
+    }
+    if (song.composer) {
+      screen.append(el("p", "small credit-line", "作曲　" + song.composer));
+    }
+    if (song.mvDate) {
+      const m = song.mvDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      const dateText = m ? Number(m[1]) + "年" + Number(m[2]) + "月" + Number(m[3]) + "日" : song.mvDate;
+      screen.append(el("p", "small credit-line", "MV投稿日　" + dateText));
+    }
+    // MVリンクはMV投稿日（または他のクレジット）の直後に表示する
+    addMvLink(screen, song);
+  }
+
+  function addMvLink(container, song) {
+    if (!song.url) return;
+    const link = el("a", "mv-link", "MVを視聴する");
+    link.href = song.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", song.name + "のMVを視聴する(新しいタブで開く)");
+    container.append(link);
+  }
+  // Xの投稿画面を開く
+function addPostButton(actions, song, questionCount, resultType) {
+  const isWatermelon = WATERMELON_SONGS.has(song.name);
+  const title = isWatermelon
+    ? "めっちゃかっこいいすいぱかの曲を当てる"
+    : "めっちゃかっこいいめろぱかの曲を当てる";
+  const emoji = isWatermelon ? "🍉" : "🍈";
+
+  const text =
+    title + "\n" +
+    (resultType === "当てられなかった"
+  ? "「" + song.name + "」を当てられなかった😢"
+  : "「" + song.name + "」を" + resultType + emoji) + "\n" +
+    "質問回数：" + questionCount + "回　#めろあて\n\n" +
+    "あなたも挑戦👇\n" + SITE_URL;
+
+  actions.append(button("𝕏でポストする", "", () => {
+    const url = "https://twitter.com/intent/tweet?text=" +
+      encodeURIComponent(text);
+    window.open(url, "_blank", "noopener,noreferrer");
+  }));
+}
+
+  // ===== 自分が当てるモードの画面 =====
+  // 画面は4つ: ①3つのボタンの画面 / ②質問の一覧 / ③曲の一覧 / ④降参の確認
+  // panel という変数に、いまどの画面かを入れています
+  function show(name) {
+    panel = name;
+    render();
+    if (typeof window !== "undefined") window.scrollTo(0, 0);   // 画面を切り替えたら、いちばん上へ
+  }
+
+  // 「← もどる」ボタン(①の画面にもどる)
+  function backRow() {
+    const row = el("div", "backrow");
+    row.append(button("← もどる", "link", () => show(null)));
+    return row;
+  }
+
+  // いちばん新しい質問と、その答え(大きく)を、box の中に出す
+  function addLatest(box, hint) {
+    if (asked.length === 0) { box.append(el("p", "small", hint)); return; }
+    const last = asked[asked.length - 1];
+    box.append(
+      el("p", "small", QUESTIONS[last.q]),
+      el("p", "answer-big " + ansClass(last.a), ansLabel(last.a))
+    );
+  }
+
+  function renderPlayer(screen) {
+    screen.append(el("p", "small", "質問 " + asked.length + "回 / ハズレ " + wrong.length + "回"));
+
+    if (finished === "win") {
+      screen.append(
+        el("p", "small", "正解!"),
+        el("p", "big", "「" + target.name + "」")
+      );
+      addCredits(screen, target, asked.length, wrong.length);
+      actionsEl.append(button("もう一度あそぶ", "main", restart));
+      addPostButton(actionsEl, target, asked.length, "当てた");
+      return;
+    }
+    if (finished === "giveup") {
+      screen.append(
+        el("p", "small", "答えは…"),
+        el("p", "big", "「" + target.name + "」")
+      );
+      addCredits(screen, target, asked.length, wrong.length);
+      actionsEl.append(button("もう一度あそぶ", "main", restart));
+      addPostButton(actionsEl, target, asked.length, "当てられなかった");
+      return;
+    }
+
+    // ① 3つのボタンの画面: 質問を選ぶ / 回答する / 降参する
+    if (panel === null) {
+      const latest = el("div", "latest");
+      addLatest(latest, "まだ質問していません");
+      const hub = el("div", "btns");
+      hub.append(
+        button("質問を選ぶ", "main", () => show("questions")),
+        button("回答する", "", () => show("answer")),
+        button("降参する", "", () => show("giveup"))
+      );
+      screen.append(latest);
+      actionsEl.append(hub);
+      return;
+    }
+
+    // ② 質問の一覧(した質問は押せなくして、そこに答えを表示する)
+    if (panel === "questions") {
+      const head = el("div", "latest");   // 上に固定される部分
+      head.append(backRow());
+      addLatest(head, "質問を押すと、答えがここに大きく出ます");
+      const qbox = el("div", "btns");
+      QUESTIONS.forEach((text, q) => {
+        const done = asked.find(x => x.q === q);          // この質問は、もうしたか
+        const b = el("button", "qbtn" + (done ? " done" : ""));
+        b.append(el("span", "", text));
+        if (done) {
+          b.disabled = true;                                // 押せなくする
+          b.append(el("span", "badge " + ansClass(done.a), ansLabel(done.a)));
+        } else {
+          // 正解の曲の答え(target.answers[q])を、そのまま記録する
+          b.addEventListener("click", () => { asked.push({ q: q, a: target.answers[q] }); render(); });
+        }
+        qbox.append(b);
+      });
+      qbox.append(button("もどる", "", () => show(null)));   // 一覧のいちばん下にも、戻るボタン
+      screen.append(head);
+      actionsEl.append(qbox);
+      return;
+    }
+
+    // ③ 曲の一覧(曲名を答える): 質問ボタンと同じ大きさ・形のボタン
+    if (panel === "answer") {
+      const head = el("div", "latest");
+      head.append(backRow(), el("p", "small", "曲名をえらんでください"));
+      const sbox = el("div", "btns");
+      SONGS.forEach(s => {
+        if (wrong.includes(s.name)) return;   // はずした曲は、もう出さない
+        sbox.append(button(s.name, "qbtn", () => {
+          if (s.name === target.name) finished = "win";
+          else wrong.push(s.name);
+          render();
+        }));
+      });
+      sbox.append(button("もどる", "", () => show(null)));   // 一覧のいちばん下にも、戻るボタン
+      screen.append(head);
+      actionsEl.append(sbox);
+      return;
+    }
+
+    // ④ 降参の確認
+    if (panel === "giveup") {
+      const box = el("div", "btns");
+      box.append(
+        button("はい", "", () => { finished = "giveup"; render(); }),
+        button("いいえ", "", () => show(null))
+      );
+      screen.append(el("p", "q", "降参してよろしいですか?"));
+      actionsEl.append(box);
+    }
+  }
+
+  function render() {
+    const screen = document.getElementById("screen");   // 上の枠(文字を入れる)
+    screen.textContent = "";
+    actionsEl.textContent = "";
+
+    // 隠し演出は、対象曲の答えが確定して表示される場面だけ有効にする
+    const watermelonMode =
+      (mode === "ai" && found !== null && WATERMELON_SONGS.has(found)) ||
+      (mode === "player" && target !== null &&
+        WATERMELON_SONGS.has(target.name) &&
+        (finished === "win" || finished === "giveup"));
+    document.body.classList.toggle("watermelon-mode", watermelonMode);
+    document.title = (watermelonMode
+      ? "めっちゃかっこいいすいぱかの曲を当てる"
+      : TITLE.split("|").join(""));
+
+    // 短い画面は縦の真ん中に置く。長い一覧の画面(質問の一覧・曲の一覧・データ診断)は、上を基準にする
+    const listScreen = mode === "player" && !finished && (panel === "questions" || panel === "answer");
+    const tall = mode === "check" || listScreen;
+    document.getElementById("page").className = tall ? "" : "center";
+    // 質問や曲の一覧の画面では、上の四角(文字)を画面の上に固定する
+    screen.className = listScreen ? "card sticky" : "card";
+
+    // いちばん上のタイトルの四角: 最初の画面だけ大きく、改行して出す
+    const titleBox = document.getElementById("titlebox");
+    const h = document.getElementById("title");
+    h.textContent = "";
+    const activeTitle = watermelonMode
+      ? "めっちゃかっこいい|すいぱかの|曲を当てる"
+      : TITLE;
+    const [t1, t2, t3] = activeTitle.split("|");
+    if (mode === null) {
+      titleBox.className = "card big";
+      h.append(t1, document.createElement("br"), t2, document.createElement("br"), t3);   // 3行
+    } else {
+      titleBox.className = "card";
+      h.textContent = t1 + t2 + t3;   // ほかの画面は、細い四角に1行で出す
+    }
+
+    // --- モード選択画面 ---
+    if (mode === null) {
+      const box = el("div", "btns");
+      box.append(
+        button("当ててもらう", "main", () => { mode = "ai"; render(); }),
+        button("自分で当てる", "", () => {
+          mode = "player";
+          target = SONGS[Math.floor(Math.random() * SONGS.length)];  // ランダムに1曲えらぶ
+          render();
+        })
+      );
+      actionsEl.append(box);
+      return;
+    }
+    if (mode === "player") { renderPlayer(screen); return; }
+    if (mode === "check") { renderCheck(screen); return; }
+
+    // --- スタート画面 ---
+    if (!started) {
+      const lead = el("p", "big lead");
+      lead.append(ARTIST + "の曲を", document.createElement("br"), "思い浮かべてください");
+      screen.append(lead);
+      actionsEl.append(button("スタート", "main", () => { started = true; render(); }));
+      return;
+    }
+
+    const cands = candidates();
+
+    // --- 当たった ---
+    if (found) {
+      screen.append(el("p", "big", "「" + found + "」"));
+      const foundSong = SONGS.find(song => song.name === found);
+      if (foundSong) {
+        addCredits(screen, foundSong, answers.length);
+        actionsEl.append(button("もう一度あそぶ", "main", restart));
+        addPostButton(actionsEl, foundSong, answers.length, "当てられた");
+      } else {
+        actionsEl.append(button("もう一度あそぶ", "main", restart));
+      }
+      return;
+    }
+
+    // --- 候補が1つ: 「これですか?」と聞く ---
+    if (cands.length === 1) { guessScreen(screen, cands[0]); return; }
+
+    // --- 候補がゼロ: 答えが食い違った ---
+    if (cands.length === 0) {
+      screen.append(
+        el("p", "q", "わかりませんでした…"),
+        el("p", "small", "この曲は、データに入っていないのかもしれません")
+      );
+      actionsEl.append(button("もう一度あそぶ", "main", restart));
+      return;
+    }
+
+    const q = pickQuestion(cands);
+
+    // --- 質問がもうない: いちばん近い曲から順に「これですか?」と聞く ---
+    if (q === -1) { guessScreen(screen, cands[0]); return; }
+
+    // --- 質問を出す ---
+    screen.append(
+      el("p", "small", "質問 " + (answers.length + 1)),
+      el("p", "q two", QUESTIONS[q])
+    );
+    const box = el("div", "btns");
+    box.append(
+      button("はい", "main", () => answer(1)),
+      button("たぶんそう", "", () => answer(0.5)),
+      button("わからない", "", () => answer(0)),
+      button("たぶん違う", "", () => answer(-0.5)),
+      button("いいえ", "", () => answer(-1))
+    );
+    actionsEl.append(box);
+    // 「ひとつ戻る」は、最初の質問のときは見えないだけで、場所は取っておく(ボタンの位置がずれないように)
+    const back = button("ひとつ戻る", "link", () => {
+      const last = answers.pop();
+      shown = { key: currentKey(), q: last.q };   // 戻ったときは、前と同じ質問を出す
+      render();
+    });
+    if (answers.length === 0) { back.className += " ghost"; back.disabled = true; }
+    actionsEl.append(back);
+  }
+
+  document.title = TITLE.split("|").join("");
+
+  // データの書き間違いを、開発者ツールのConsoleで知らせる
+  SONGS.forEach(s => {
+    if (s.answers.length !== QUESTIONS.length) {
+      console.warn("答えの数が合っていません:", s.name);
+    }
+  });
+
+  if (location.hash === "#check") mode = "check";   // データ診断(アドレスの末尾に #check)
+  render();
+</script>
+</body>
+</html>
