@@ -68,7 +68,12 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpolygon points='14.0,8.0 15.5,12.0 19.7,12.1 16.4,14.8 17.5,18.9 14.0,16.5 10.5,18.9 11.6,14.8 8.3,12.1 12.5,12.0' fill='white' fill-opacity='.6'/%3E%3Cpolygon points='42.0,36.0 43.5,40.0 47.7,40.1 44.4,42.8 45.5,46.9 42.0,44.5 38.5,46.9 39.6,42.8 36.3,40.1 40.5,40.0' fill='white' fill-opacity='.6'/%3E%3C/svg%3E");   /* 小さめの星を、細かい間隔で */
     background-size: 56px 56px; }
   #titlebox.big { padding: 34px 22px; text-align: left; }   /* 最初の画面だけ、大きく・左寄せ */
-  #actions { box-shadow: 6px 6px 0 var(--sh-btn); }
+#actions {
+  box-shadow: 6px 6px 0 var(--sh-btn);
+  max-height: 40vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
   #screen:empty, #actions:empty { display: none; }   /* 中身がないときは出さない */
   #screen.sticky { position: sticky; top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 5; }
 
