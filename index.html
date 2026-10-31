@@ -70,12 +70,10 @@
   #titlebox.big { padding: 34px 22px; text-align: left; }   /* 最初の画面だけ、大きく・左寄せ */
 #actions {
   box-shadow: 6px 6px 0 var(--sh-btn);
-  max-height: 40vh;
+  max-height: 425px;
   overflow-y: auto;
-  overscroll-behavior: contain;
 }
   #screen:empty, #actions:empty { display: none; }   /* 中身がないときは出さない */
-  #screen.sticky { position: sticky; top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 5; }
 
   h1 { font-size: .95rem; font-weight: 700; margin: 0; line-height: 1.4; text-wrap: balance; }   /* プレイ中は、細い四角に小さめの文字 */
   #titlebox.big h1 { font-size: clamp(1.7rem, 8.5vw, 2.6rem); font-weight: 900; line-height: 1.35; }
