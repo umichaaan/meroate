@@ -222,12 +222,12 @@ body.watermelon-mode #site-credit a {
     {
       name: "めろんぱーてぃー",
       reading: "めろんぱーてぃー",
-      url: "https://www.youtube.com/watch?v=j4ZnTXBzhX0",
+      url: "https://www.youtube.com/watch?v=Sgox7AfK4w0",
       mvDate: "2022-09-09",
-      album: "めろんめろでぃー",
+      album: "",
       lyrics: ["なろ屋","長月もしも"],
       composer: "長月もしも",
-      answers: [1,0,0,1,1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,0,0,0,1,1],
+      answers: [0,0,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,1,0,1,0,0,0,1,1],
     },
     {
       name: "Me 論破 Rap Destruction",
@@ -238,6 +238,16 @@ body.watermelon-mode #site-credit a {
       lyrics: ["なろ屋","長月もしも"],
       composer: "長月もしも",
       answers: [1,0,0,0,1,1,1,1,0,0,1,0,1,0,0,1,0,0,0,1,0,0,0,0,1],
+    },
+    {
+      name: "めろんぱーてぃー -Remix ver.-",
+      reading: "めろんぱーてぃーりみっくすばーじょん",
+      url: "https://www.youtube.com/watch?v=j4ZnTXBzhX0",
+      mvDate: "2022-12-25",
+      album: "めろんめろでぃー♪",
+      lyrics: ["なろ屋", "長月もしも"],
+      composer: "長月もしも",
+      answers: [1,0,0,0,1,1,1,1,0,0,1,1,0,0,0,1,0,0,0,1,0,0,0,1,1],
     },
     {
       name: "愛さKnightアンサンブル",
@@ -690,6 +700,16 @@ body.watermelon-mode #site-credit a {
       answers: [0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
     },
     {
+      name: "めろんぱーてぃー(2026ver.)",
+      reading: "めろんぱーてぃー2026ばーじょん",
+      url: "https://www.youtube.com/watch?v=j4ZnTXBzhX0",
+      mvDate: "2026-08-01",
+      album: "めろんせれくしょん",
+      lyrics: ["なろ屋", "長月もしも"],
+      composer: "長月もしも",
+      answers: [0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,1,0,1,1,0,0,0,0,1,1],
+    },
+    {
       name: "IIII",
       reading: "ふぉー",
       url: "https://www.youtube.com/watch?v=DGOD9_R-fAo",
@@ -719,6 +739,16 @@ body.watermelon-mode #site-credit a {
        composer: "長月もしも",
       answers: [0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
      },
+    {
+      name: "僕たち絵具になりました",
+      reading: "ぼくたちえのぐになりました",
+      url: "https://www.youtube.com/watch?v=DL-M7P04_ok",
+      mvDate: "2026-11-04",
+      album: "",
+      lyrics: ["そらねこ",],
+      composer: "そらねこ",
+      answers: [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
+    },
 
     // 新曲を追加するためのひな形(コピーして、上の曲一覧の中に追加してください)
     // {
@@ -905,6 +935,9 @@ body.watermelon-mode #site-credit a {
     }
     if (song.composer) {
       screen.append(el("p", "small credit-line", "作曲　" + song.composer));
+    }
+    if (song.album) {
+      screen.append(el("p", "small credit-line", "収録アルバム　" + song.album));
     }
     if (song.mvDate) {
       const m = song.mvDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
